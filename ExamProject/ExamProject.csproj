@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Extentions\" />
     <Folder Include="FileHelper\" />
   </ItemGroup>
 
