@@ -3,11 +3,6 @@ using ExamProject.Extentions;
 
 public class Dish
 {
-    public Dish()
-    {
-        Id = GeneratorHelper.GenerateId(PathHolder.DishPath);
-    }
-
     public int Id { get; set; }
     public string Name { get; set; }
     public List<Ingredient> Ingredients { get; set; }

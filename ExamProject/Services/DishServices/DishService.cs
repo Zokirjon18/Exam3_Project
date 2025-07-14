@@ -43,8 +43,7 @@ namespace ExamProject.Services.DishServices
                 ChatId = dishCreateModel.ChatId
             });
 
-            FileHelper.WriteToFile(PathHolder.DishPath, convertedDishes);   
-            
+            FileHelper.WriteToFile(PathHolder.DishPath, convertedDishes);            
         }
 
         public void Update(DishUpdateModel dishUpdateModel)
