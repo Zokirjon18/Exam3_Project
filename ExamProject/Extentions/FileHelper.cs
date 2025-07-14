@@ -11,8 +11,8 @@ public class FileHelper
         return File.ReadAllText(filePath);
     }
 
-    public static void WriteToFile(string filePath, string content)
+    public static void WriteToFile<T>(string filePath, List<T> models)
     {
-        File.WriteAllText(filePath, content);
+        File.WriteAllLines(filePath, models.ToStringList());
     }
 }
