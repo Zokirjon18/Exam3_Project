@@ -19,7 +19,7 @@ namespace ExamProject.Services.DishServices
             string text = FileHelper.ReadFromFile(PathHolder.DishPath);
             List<Dish> convertedDishes = text.ToDish();
 
-            List<Dish> filteredDishes = FilterByChatId(dishCreateModel.ChatId);
+            List<Dish> filteredDishes = FilterByChatId(convertedDishes,dishCreateModel.ChatId);
 
             var existDish = filteredDishes.Find(x => x.Name == dishCreateModel.Name);
 
@@ -77,14 +77,11 @@ namespace ExamProject.Services.DishServices
             throw new NotImplementedException();
         }
 
-        private List<Dish> FilterByChatId(long chatId)
+        private List<Dish> FilterByChatId(List<Dish> allDishes,long chatId)
         {
-            string text = FileHelper.ReadFromFile(PathHolder.DishPath);
-            List<Dish> convertedDishes = text.ToDish();
-
             List<Dish> filteredDishes = new List<Dish>();
 
-            foreach (var dish in convertedDishes)
+            foreach (var dish in allDishes)
             {
                 if (dish.ChatId == chatId)
                 {
