@@ -58,7 +58,7 @@ namespace ExamProject.Services.DishServices
             List<Dish> filteredDishes = FilterByChatId(convertedDishes, dishUpdateModel.ChatId);
 
             var dishForUpdation = filteredDishes.Find(x => x.Id == dishUpdateModel.Id)
-                ?? throw new Exception($"Dish could not be found with ID: {dishUpdateModel.Id}"); ;
+                ?? throw new Exception($"Dish could not be found with ID: {dishUpdateModel.Id}"); 
             
             var existDish = filteredDishes.Find(x => x.Name == dishUpdateModel.Name && x.Id != dishUpdateModel.Id);
 
@@ -83,13 +83,24 @@ namespace ExamProject.Services.DishServices
 
         public void Delete(long chatId, int id)
         {
-            throw new NotImplementedException();
+            string text = FileHelper.ReadFromFile(PathHolder.DishPath);
+            List<Dish> convertedDishes = text.ToDish();
+
+            var dishForDeletion = convertedDishes.Find(x => x.Id == id && x.ChatId == chatId)
+                ?? throw new Exception($"Dish could not be found with ID: {id}");
+
+            convertedDishes.Remove(dishForDeletion);
+
+            FileHelper.WriteToFile(PathHolder.DishPath, convertedDishes);
         }
 
         public DishViewModel Get(long chatId, int id)
         {
             string Categorytext = FileHelper.ReadFromFile(PathHolder.CategoryPath);
             List<Category> categories = Categorytext.ToCategories();
+
+
+
 
             throw new NotImplementedException();
         }
