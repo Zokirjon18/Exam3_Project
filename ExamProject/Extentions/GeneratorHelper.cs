@@ -8,5 +8,6 @@ namespace ExamProject.Extentions
 {
     internal class GeneratorHelper
     {
+
     }
 }
