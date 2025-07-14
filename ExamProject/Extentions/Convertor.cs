@@ -1,3 +1,4 @@
+using ExamProject.Domain;
 using ExamProject.Enums;
 
 namespace ExamProject.Extentions;
@@ -40,4 +41,19 @@ public static class Convertor
         }
         return dishes;
     }
-}
+    
+    
+        public static List<Category> ToCategory(this string text)
+        {
+            return text.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(line =>
+                {
+                    var parts = line.Split(',');
+                    return new Category
+                    {
+                        Id = int.Parse(parts[0]),
+                        Name = parts[1]
+                    };
+                }).ToList();
+        }
+    }
+

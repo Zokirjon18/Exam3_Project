@@ -1,9 +1,13 @@
-﻿using ExamProject.Domain;
+﻿using ExamProject.Constants;
+using ExamProject.Domain;
+using ExamProject.Extentions;
 
 namespace ExamProject.Services.CategoryServices
 {
+    
     public class CategoryService : ICategoryService
     {
+        private readonly string path = PathHolder.CategoryPath;
         public void Create(string name)
         {
             throw new NotImplementedException();
@@ -16,7 +20,9 @@ namespace ExamProject.Services.CategoryServices
 
         public Category Get(int id)
         {
-            throw new NotImplementedException();
+            var text = FileHelper.ReadFromFile(path);
+            var categories = text.ToCategory();
+            return categories.FirstOrDefault(c => c.Id == id);
         }
 
         public List<Category> GetAll()
