@@ -1,4 +1,6 @@
-namespace ExamProject.Extentions;
+using ExamProject.Extentions;
+
+namespace ExamProject.FileHelper;
 
 public class FileHelper
 {
