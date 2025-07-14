@@ -1,5 +1,5 @@
-﻿using ExamProject.Constants;
-using ExamProject.Domain;
+﻿using ExamProject.Domain;
+using ExamProject.Enums;
 using ExamProject.Models;
 
 namespace ExamProject.Extentions;
@@ -16,12 +16,13 @@ public static class Convertor
         {
             if (string.IsNullOrWhiteSpace(line)) continue;
 
-            var parts = line.Split(',');
+            var parts = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            var ingredients = parts[2]
-           .Split('|', StringSplitOptions.RemoveEmptyEntries)
-           .Select(name => new Ingredient { Name = name.Trim() })
-           .ToList();
+            // skips invalid lines because in our case is gonna cause unpleasing issues
+            if (parts.Length != 6)
+                continue;
+
+            var ingredients = ParseIngredientsPart(parts[2]);
 
             dishes.Add(new Dish
             {
@@ -30,7 +31,7 @@ public static class Convertor
                 Ingredients = ingredients,
                 ReadyIn = TimeSpan.Parse(parts[3]),
                 CategoryId = int.Parse(parts[4]),
-                ChatId = Convert.ToInt64(parts[2])
+                ChatId = Convert.ToInt64(parts[5])
             });
         }
 
@@ -58,11 +59,8 @@ public static class Convertor
 
         return categories;
     }
-    public static DishViewModel ToDishViewModel(this Dish dish)
+    public static DishViewModel ToDishViewModel(this Dish dish,List<Category> categories)
     {
-        string Categorytext = FileHelper.ReadFromFile(PathHolder.CategoryPath);
-        List<Category> categories = Categorytext.ToCategories();
-
         var category = categories.FirstOrDefault(c => c.Id == dish.CategoryId);
 
         if (category == null)
@@ -75,5 +73,27 @@ public static class Convertor
             ingredients = dish.Ingredients,
             ReadyIn = dish.ReadyIn,
         };
+    }
+
+    private static List<Ingredient> ParseIngredientsPart(string ingredientText)
+    {
+        var ingredientStrings = ingredientText.Split('|', StringSplitOptions.RemoveEmptyEntries);
+        var ingredients = new List<Ingredient>();
+
+        foreach (var ing in ingredientStrings)
+        {
+            var ingParts = ing.Split('-', StringSplitOptions.RemoveEmptyEntries);
+            if (ingParts.Length != 3)
+                continue;
+
+            ingredients.Add(new Ingredient
+            {
+                Name = ingParts[0].Trim(),
+                Amount = double.Parse(ingParts[1].Trim()),
+                Unit = Enum.Parse<Unit>(ingParts[2].Trim(), ignoreCase: true)
+            });
+        }
+
+        return ingredients;
     }
 }
