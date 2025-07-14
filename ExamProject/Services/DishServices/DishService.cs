@@ -1,42 +1,98 @@
-﻿using ExamProject.Models;
+﻿using ExamProject.Constants;
+using ExamProject.Extentions;
+using ExamProject.Models;
+using ExamProject.Services.CategoryServices;
 
 namespace ExamProject.Services.DishServices
 {
     public class DishService : IDishService
     {
+        public CategoryService categoryService;
+
+        public DishService(CategoryService categoryService)
+        {
+            this.categoryService = categoryService;
+        }
+          
         public void Create(DishCreateModel dishCreateModel)
         {
-            throw new NotImplementedException();
-        }
+            string text = FileHelper.ReadFromFile(PathHolder.DishPath);
+            List<Dish> convertedDishes = text.ToDish();
 
-        public void Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
+            List<Dish> filteredDishes = FilterByChatId(dishCreateModel.ChatId);
 
-        public DishViewModel Get(int id)
-        {
-            throw new NotImplementedException();
-        }
+            var existDish = filteredDishes.Find(x => x.Name == dishCreateModel.Name);
 
-        public List<DishViewModel> GetAllByCategoryId(int categoryId)
-        {
-            throw new NotImplementedException();
-        }
+            if (existDish != null)
+            {
+                throw new Exception("Sorry a dish on this name already exists." +
+                    "\nPlease change it OR add some adjustments like this DISH_NAME2");
+            }
 
-        public List<DishViewModel> GetAllByDishName(string dishName)
-        {
-            throw new NotImplementedException();
-        }
+            var categories = categoryService.GetAll(dishCreateModel.ChatId);
 
-        public List<DishViewModel> GetAllByIngredients(List<Ingredient> ingredients)
-        {
-            throw new NotImplementedException();
+            var existCategory = categories.Find(x => x.Id == dishCreateModel.categoryId)
+                ?? throw new Exception("Category was not found.\nPlease select a valid category.");
+
+            convertedDishes.Add(new Dish
+            {
+                Name = dishCreateModel.Name,
+                Ingredients = dishCreateModel.ingredients,
+                ReadyIn = dishCreateModel.ReadyIn,
+                CategoryId = dishCreateModel.categoryId,
+                ChatId = dishCreateModel.ChatId
+            });
+
+            FileHelper.WriteToFile(PathHolder.DishPath, convertedDishes);   
+            
         }
 
         public void Update(DishUpdateModel dishUpdateModel)
         {
+            
+        }
+
+        public void Delete(long chatId, int id)
+        {
             throw new NotImplementedException();
+        }
+
+        public DishViewModel Get(long chatId, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<DishViewModel> GetAllByDishName(long chatId, string dishName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<DishViewModel> GetAllByCategoryId(long chatId, int categoryId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<DishViewModel> GetAllByIngredients(long chatId, List<Ingredient> ingredients)
+        {
+            throw new NotImplementedException();
+        }
+
+        private List<Dish> FilterByChatId(long chatId)
+        {
+            string text = FileHelper.ReadFromFile(PathHolder.DishPath);
+            List<Dish> convertedDishes = text.ToDish();
+
+            List<Dish> filteredDishes = new List<Dish>();
+
+            foreach (var dish in convertedDishes)
+            {
+                if (dish.ChatId == chatId)
+                {
+                    filteredDishes.Add(dish);
+                }
+            }
+
+            return filteredDishes;
         }
     }
 }

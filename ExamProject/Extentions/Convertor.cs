@@ -1,59 +1,88 @@
+
 using ExamProject.Domain;
 using ExamProject.Enums;
+using ExamProject.Constants;
+using ExamProject.Domain;
+using ExamProject.Models;
+
 
 namespace ExamProject.Extentions;
 
 public static class Convertor
 {
-    public static List<Dish> ToDishe(this string text)
+
+
+    public static List<Dish> ToDish(this string text)
     {
         List<Dish> dishes = new List<Dish>();
+
         string[] lines = text.Split('\n');
+
         foreach (var line in lines)
         {
-            if (string.IsNullOrWhiteSpace(line))  continue;
-                string[] parts = line.Split(',');
-                var id = int.Parse(parts[0]);
-                var name = parts[1];
-                var ingredientParts = parts[2].Split(',');
-                var ingredients = ingredientParts.Select<string, object>(p =>
-                {
-                    var pair=p.Split(':');
-                    return new Ingredient
-                    {
-                        Name = pair[0],
-                        Amount = double.Parse(pair[1]),
-                        Unit = Enum.Parse<Unit>(pair[2]),
-                    };
-                }).ToList();
-                TimeSpan ready=TimeSpan.Parse(parts[3]);
-                int categoryId=int.Parse(parts[4]);
-                
-                dishes.Add(new Dish()
-                {
-                    Id = id,
-                    Name = name,
-                    Ingredients = ingredients,
-                    ReadyIn = ready,
-                    CategoryId = categoryId
-                    
-                });
+            if (string.IsNullOrWhiteSpace(line)) continue;
+
+            var parts = line.Split(',');
+
+            var ingredients = parts[2]
+                .Split('|', StringSplitOptions.RemoveEmptyEntries)
+                .Select(name => new Ingredient { Name = name.Trim() })
+                .ToList();
+
+            dishes.Add(new Dish
+            {
+                Id = int.Parse(parts[0]),
+                Name = parts[1],
+                Ingredients = ingredients,
+                ReadyIn = TimeSpan.Parse(parts[3]),
+                CategoryId = int.Parse(parts[4]),
+                ChatId = Convert.ToInt64(parts[5])
+            });
         }
+
         return dishes;
     }
-    
-    
-        public static List<Category> ToCategory(this string text)
+
+    public static List<Category> ToCategories(this string text)
+    {
+        List<Category> categories = new List<Category>();
+
+        string[] lines = text.Split('\n');
+
+        foreach (string line in lines)
         {
-            return text.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(line =>
-                {
-                    var parts = line.Split(',');
-                    return new Category
-                    {
-                        Id = int.Parse(parts[0]),
-                        Name = parts[1]
-                    };
-                }).ToList();
+            if (string.IsNullOrWhiteSpace(line)) continue;
+
+            string[] parts = line.Split(',');
+
+            categories.Add(new Category
+            {
+                Id = int.Parse(parts[0]),
+                Name = parts[1],
+                ChatId = Convert.ToInt64(parts[2])
+            });
         }
+
+        return categories;
     }
+
+    public static DishViewModel ToDishViewModel(this Dish dish)
+    {
+        string Categorytext = FileHelper.ReadFromFile(PathHolder.CategoryPath);
+        List<Category> categories = Categorytext.ToCategories();
+
+        var category = categories.FirstOrDefault(c => c.Id == dish.CategoryId);
+
+        if (category == null)
+            throw new ArgumentException($"Category was not found with this ID: {dish.CategoryId}");
+
+        return new DishViewModel
+        {
+            Name = dish.Name,
+            CategoryName = category.Name,
+            ingredients = dish.Ingredients,
+            ReadyIn = dish.ReadyIn,
+        };
+    }
+}
 

@@ -7,30 +7,32 @@ namespace ExamProject.Services.CategoryServices
     
     public class CategoryService : ICategoryService
     {
+
         private readonly string path = PathHolder.CategoryPath;
-        public void Create(string name)
+        
+        public void Create(long chatId,string name)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(int id)
+        public void Delete(long chatId,int id)
         {
             throw new NotImplementedException();
         }
 
-        public Category Get(int id)
+        public Category Get(long chatId,int id)
         {
             var text = FileHelper.ReadFromFile(path);
-            var categories = text.ToCategory();
+            var categories = text.ToCategories();
             return categories.FirstOrDefault(c => c.Id == id);
         }
 
-        public List<Category> GetAll()
+        public List<Category> GetAll(long chatId)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(int id, string name)
+        public void Update(long chatId,int id, string name)
         {
             throw new NotImplementedException();
         }
