@@ -8,7 +8,7 @@ namespace ExamProject.Services.CategoryServices
         void Update(int id, string name);
         void Delete(int id);
         Category Get(int id);
-        List<Category> GetAll();
+        List<Category> GetAll(string search);
         
         
     }

@@ -1,4 +1,4 @@
-﻿namespace ExamProject.FileHelper;
+﻿namespace ExamProject.Helpers;
 
 public static class GeneratorHelper
 {
