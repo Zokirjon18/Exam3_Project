@@ -64,7 +64,7 @@ public static class Convertor
         var category = categories.FirstOrDefault(c => c.Id == dish.CategoryId);
 
         if (category == null)
-            throw new ArgumentException($"Category was not found with this ID: {dish.CategoryId}");
+            throw new ArgumentException($"Category was not found with ID: {dish.CategoryId}");
 
         return new DishViewModel
         {

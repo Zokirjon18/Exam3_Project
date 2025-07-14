@@ -10,6 +10,6 @@ namespace ExamProject.Services.DishServices
         DishViewModel Get(long chatId,int id);
         List<DishViewModel> GetAllByDishName(long chatId,string dishName);
         List<DishViewModel> GetAllByCategoryId(long chatId,int categoryId);
-        List<DishViewModel> GetAllByIngredients(long chatId,List<Ingredient> ingredients);
+        List<DishViewModel> GetAllByIngredients(long chatId,List<string> ingredients);
     }
 }
