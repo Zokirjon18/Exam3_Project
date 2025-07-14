@@ -4,10 +4,10 @@ namespace ExamProject.Services.CategoryServices
 {
     public interface ICategoryService
     {
-        void Create(string name);
-        void Update(int id, string name);
-        void Delete(int id);
-        Category Get(int id);
-        List<Category> GetAll();    
+        public void Create(long chatId, string name);
+        public void Update(long chatId, int id, string name);
+        public void Delete(long chatId, int id);
+        public Category Get(long chatId, int id);
+        public List<Category> GetAll(long chatId);    
     }
 }

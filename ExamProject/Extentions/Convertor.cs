@@ -29,7 +29,8 @@ public static class Convertor
                 Name = parts[1],
                 Ingredients = ingredients,
                 ReadyIn = TimeSpan.Parse(parts[3]),
-                CategoryId = int.Parse(parts[4])
+                CategoryId = int.Parse(parts[4]),
+                ChatId = Convert.ToInt64(parts[2])
             });
         }
 
@@ -50,7 +51,8 @@ public static class Convertor
             categories.Add(new Category
             {
                 Id = int.Parse(parts[0]),
-                Name = parts[1]
+                Name = parts[1],
+                ChatId = Convert.ToInt64(parts[2])
             });
         }
 

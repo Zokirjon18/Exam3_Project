@@ -6,5 +6,6 @@
         public int categoryId {  get; set; }
         public List<Ingredient> ingredients { get; set; }
         public TimeSpan ReadyIn {  get; set; }
+        public long ChatId { get; set; }
     }
 }

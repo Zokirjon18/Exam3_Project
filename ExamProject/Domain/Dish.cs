@@ -1,8 +1,17 @@
-﻿public class Dish
+﻿using ExamProject.Constants;
+using ExamProject.Extentions;
+
+public class Dish
 {
+    public Dish()
+    {
+        Id = GeneratorHelper.GenerateId(PathHolder.DishPath);
+    }
+
     public int Id { get; set; }
     public string Name { get; set; }
     public List<Ingredient> Ingredients { get; set; }
     public TimeSpan ReadyIn { get; set; }
-    public int CategoryId { get; set; } 
+    public int CategoryId { get; set; }
+    public long ChatId { get; set; }
 }
