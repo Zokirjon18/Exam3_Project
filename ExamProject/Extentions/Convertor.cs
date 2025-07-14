@@ -58,19 +58,20 @@ public static class Convertor
     }
     public static DishViewModel ToDishViewModel(this Dish dish)
     {
-        string categoryText = FileHelper.ReadFromFile(PathHolder.CategoryPath);
-        List<Category> categories = categoryText.ToCategories();
+        string Categorytext = FileHelper.ReadFromFile(PathHolder.CategoryPath);
+        List<Category> categories = Categorytext.ToCategories();
 
         var category = categories.FirstOrDefault(c => c.Id == dish.CategoryId);
 
         if (category == null)
-            throw new ArgumentException("Category not found for Dish ID: " + dish.Id);
+            throw new ArgumentException($"Category was not found with this ID: {dish.CategoryId}");
 
         return new DishViewModel
         {
-            DishName = dish.Name,
+            Name = dish.Name,
             CategoryName = category.Name,
-            PriceFormatted = string.Join(", ", dish.Ingredients.Select(i => i.Name)) + $" | Ready in: {dish.ReadyIn.TotalMinutes} min"
+            ingredients = dish.Ingredients,
+            ReadyIn = dish.ReadyIn,
         };
     }
 }
