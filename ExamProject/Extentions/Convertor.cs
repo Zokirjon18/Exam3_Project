@@ -96,16 +96,4 @@ public static class Convertor
 
         return ingredients;
     }
-
-    public static List<string> ConvertToString(this List<Category> categories)
-    {
-        var convertedCategories = new List<string>();
-
-        foreach (var category in categories)
-        {
-            convertedCategories.Add(category.ToString());
-        }
-
-        return convertedCategories;
-    }
 }

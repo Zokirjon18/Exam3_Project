@@ -1,11 +1,14 @@
-﻿namespace ExamProject
+﻿using ExamProject.BotHandlers;
+using Telegram.Bot;
+
+namespace ExamProject
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello, Exam!");
-
+            BotHandler botHandler = new BotHandler();
+            await botHandler.Run();
         }
     }
 }

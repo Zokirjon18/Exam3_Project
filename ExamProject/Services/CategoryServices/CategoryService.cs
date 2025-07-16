@@ -62,6 +62,7 @@ namespace ExamProject.Services.CategoryServices
 
         public List<Category> GetAll(long chatId)
         {
+
             string text = File.ReadAllText(PathHolder.CategoryPath);
 
             List<Category> allCategories = text.ToCategories();
