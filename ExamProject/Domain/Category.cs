@@ -1,7 +1,4 @@
-﻿using ExamProject.Constants;
-using ExamProject.Extentions;
-
-namespace ExamProject.Domain
+﻿namespace ExamProject.Domain
 {
     public class Category
     {

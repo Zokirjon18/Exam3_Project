@@ -2,9 +2,10 @@
 {
     public enum Unit
     {
-        kilogram,
+        kg,
         gram,
-        milligram,
+        litr,
+        ml,
         pieces
     }
 }

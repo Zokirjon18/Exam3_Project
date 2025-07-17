@@ -99,13 +99,13 @@ namespace ExamProject.Services.DishServices
             string text = FileHelper.ReadFromFile(PathHolder.DishPath);
             List<Dish> convertedDishes = text.ToDish();
 
-            var dish = convertedDishes.Find(x => x.Id == id && x.ChatId == chatId)
+            var dish = convertedDishes.Find(x => x.Id == id && x.ChatId == chatId || x.ChatId == 0)
                 ?? throw new Exception($"Dish could not be found with ID: {id}");
 
             string Categorytext = FileHelper.ReadFromFile(PathHolder.CategoryPath);
             List<Category> categories = Categorytext.ToCategories();
 
-            return dish.ToDishViewModel(categories);
+            return dish.ToDishViewModel(categories,chatId);
         }
 
         public List<DishViewModel> GetAllByDishName(long chatId, string dishName)
@@ -113,7 +113,7 @@ namespace ExamProject.Services.DishServices
             string text = FileHelper.ReadFromFile(PathHolder.DishPath);
             List<Dish> convertedDishes = text.ToDish();
 
-            List<Dish> userDishes = convertedDishes.FindAll(x => x.ChatId == chatId);
+            List<Dish> userDishes = convertedDishes.FindAll(x => x.ChatId == chatId || x.ChatId == 0);
 
             if (userDishes.Count == 0)
                 throw new Exception("You haven't added any dishes yet!");
@@ -130,7 +130,7 @@ namespace ExamProject.Services.DishServices
             {
                 if (dish.Name.Contains(dishName, StringComparison.OrdinalIgnoreCase))
                 {
-                    matchedDishes.Add(dish.ToDishViewModel(categories));
+                    matchedDishes.Add(dish.ToDishViewModel(categories,chatId));
                 }
             }
 
@@ -146,15 +146,15 @@ namespace ExamProject.Services.DishServices
             string text = FileHelper.ReadFromFile(PathHolder.DishPath);
             List<Dish> convertedDishes = text.ToDish();
 
-            List<Dish> userDishes = convertedDishes.FindAll(x => x.ChatId == chatId);
+            List<Dish> userDishes = convertedDishes.FindAll(x => x.ChatId == chatId || x.ChatId == 0);
 
             if (userDishes.Count == 0)
-                throw new Exception("You haven't added any dishes yet!");
+                throw new Exception("There is no dishes yet!");
 
 
             // for ToDishViewModel to avoid overreading from file
-            string Categorytext = FileHelper.ReadFromFile(PathHolder.CategoryPath);
-            List<Category> categories = Categorytext.ToCategories();
+            string categoryText = FileHelper.ReadFromFile(PathHolder.CategoryPath);
+            List<Category> categories = categoryText.ToCategories();
 
             // for mapped models
             List<DishViewModel> matchedDishes = new List<DishViewModel>();
@@ -163,7 +163,7 @@ namespace ExamProject.Services.DishServices
             {
                 if (dish.CategoryId == categoryId)
                 {
-                    matchedDishes.Add(dish.ToDishViewModel(categories));
+                    matchedDishes.Add(dish.ToDishViewModel(categories,chatId));
                 }
             }
 
@@ -178,7 +178,7 @@ namespace ExamProject.Services.DishServices
             string text = FileHelper.ReadFromFile(PathHolder.DishPath);
             List<Dish> convertedDishes = text.ToDish();
 
-            List<Dish> userDishes = convertedDishes.FindAll(x => x.ChatId == chatId);
+            List<Dish> userDishes = convertedDishes.FindAll(x => x.ChatId == chatId || x.ChatId == 0);
 
             if (userDishes.Count == 0)
                 throw new Exception("You haven't added any dishes yet!");
@@ -210,7 +210,7 @@ namespace ExamProject.Services.DishServices
 
                 if (matchCount == ingredientNames.Count)
                 {
-                    formatedDishes.Add(dish.ToDishViewModel(categories));
+                    formatedDishes.Add(dish.ToDishViewModel(categories, chatId));
                 }
             }
 

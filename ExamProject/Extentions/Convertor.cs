@@ -16,11 +16,11 @@ public static class Convertor
         {
             if (string.IsNullOrWhiteSpace(line)) continue;
 
-            var parts = line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var parts = line.Split(',' ,StringSplitOptions.TrimEntries);
 
-            // skips invalid lines because in our case is gonna cause unpleasing issues
+            //skips invalid lines because in our case is gonna cause unpleasing issues
             if (parts.Length != 6)
-                continue;
+                    continue;
 
             var ingredients = ParseIngredientsPart(parts[2]);
 
@@ -59,18 +59,19 @@ public static class Convertor
 
         return categories;
     }
-    public static DishViewModel ToDishViewModel(this Dish dish,List<Category> categories)
+    public static DishViewModel ToDishViewModel(this Dish dish,List<Category> categories, long chatId)
     {
-        var category = categories.FirstOrDefault(c => c.Id == dish.CategoryId);
+        var category = categories.FirstOrDefault(c => c.Id == dish.CategoryId && chatId == c.ChatId || c.ChatId == 0);
 
         if (category == null)
             throw new ArgumentException($"Category was not found with ID: {dish.CategoryId}");
 
         return new DishViewModel
         {
+            Id = dish.Id,
             Name = dish.Name,
             CategoryName = category.Name,
-            ingredients = dish.Ingredients,
+            Ingredients = dish.Ingredients,
             ReadyIn = dish.ReadyIn,
         };
     }
@@ -82,7 +83,7 @@ public static class Convertor
 
         foreach (var ing in ingredientStrings)
         {
-            var ingParts = ing.Split('-', StringSplitOptions.RemoveEmptyEntries);
+            var ingParts = ing.Split(',', StringSplitOptions.RemoveEmptyEntries);
             if (ingParts.Length != 3)
                 continue;
 
