@@ -16,7 +16,7 @@ public static class Convertor
         {
             if (string.IsNullOrWhiteSpace(line)) continue;
 
-            var parts = line.Split(',' ,StringSplitOptions.TrimEntries);
+            var parts = line.Split(',');
 
             //skips invalid lines because in our case is gonna cause unpleasing issues
             if (parts.Length != 6)
@@ -78,12 +78,12 @@ public static class Convertor
 
     private static List<Ingredient> ParseIngredientsPart(string ingredientText)
     {
-        var ingredientStrings = ingredientText.Split('|', StringSplitOptions.RemoveEmptyEntries);
+        var ingredientStrings = ingredientText.Split('|');
         var ingredients = new List<Ingredient>();
 
         foreach (var ing in ingredientStrings)
         {
-            var ingParts = ing.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            var ingParts = ing.Split(' ');
             if (ingParts.Length != 3)
                 continue;
 

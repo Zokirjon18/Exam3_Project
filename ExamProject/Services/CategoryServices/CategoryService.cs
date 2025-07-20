@@ -1,11 +1,13 @@
 ﻿using ExamProject.Constants;
 using ExamProject.Domain;
 using ExamProject.Extentions;
+using ExamProject.Services.DishServices;
 
 namespace ExamProject.Services.CategoryServices
 {
     public class CategoryService : ICategoryService
     {
+
         public void Create(long chatId,string name)
         {
             string text = File.ReadAllText(PathHolder.CategoryPath);
@@ -48,16 +50,13 @@ namespace ExamProject.Services.CategoryServices
             var existCategory = categories.Find(x => x.ChatId == chatId && x.Id == id)
                 ?? throw new Exception($"Category with ID {id} was not found for this user.");
 
-            if (!string.IsNullOrEmpty(name))
-            {
-                throw new Exception();
-            }
 
-            var alreadyExistCategory = categories.Find(x => x.Name == name)
-                ?? throw new Exception($"Category already exists with this name = {name}");
+            var alreadyExistCategory = categories.Find(x => x.Name == name);
+               if(alreadyExistCategory != null)
+                throw new Exception($"Category already exists with this name = {name}");
 
             existCategory.Name = name;
-            FileHelper.WriteToFile(PathHolder.CategoryPath, categories.ToStringList());
+            FileHelper.WriteToFile(PathHolder.CategoryPath, categories);
         }
 
         public void Delete(long chatId,int id)
@@ -67,14 +66,14 @@ namespace ExamProject.Services.CategoryServices
 
             var categoryToDelete = categories.Find(x => x.ChatId == chatId && x.Id == id);
 
-            if (categoryToDelete == null)
-            {
-                throw new Exception($"Category with ID {id} was not found for this user.");
-            }
+            //if (categoryToDelete == null)
+            //{
+            //    throw new Exception($"Category with ID {id} was not found for this user.");
+            //}
 
             categories.Remove(categoryToDelete);
 
-            FileHelper.WriteToFile(PathHolder.CategoryPath, categories.ToStringList());
+            FileHelper.WriteToFile(PathHolder.CategoryPath, categories);
         }
 
         public Category Get(long chatId,int id)

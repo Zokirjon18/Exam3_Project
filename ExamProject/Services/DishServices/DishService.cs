@@ -70,13 +70,17 @@ namespace ExamProject.Services.DishServices
 
             var categories = categoryService.GetAll(dishUpdateModel.ChatId);
 
-            var existCategory = categories.Find(x => x.Id == dishUpdateModel.categoryId)
+            var existCategory = categories.Find(x => x.Id == dishUpdateModel.CategoryId)
                 ?? throw new Exception("Category was not found.\nPlease select a valid category.");
 
-            dishForUpdation.Name = dishUpdateModel.Name;
-            dishForUpdation.Ingredients = dishUpdateModel.ingredients;
-            dishForUpdation.ReadyIn = dishUpdateModel.ReadyIn;
-            dishForUpdation.CategoryId = dishUpdateModel.categoryId;
+            if (string.IsNullOrWhiteSpace(dishUpdateModel.Name))
+                dishForUpdation.Name = dishUpdateModel.Name;
+            if (dishUpdateModel.Ingredients.Count > 0)
+                dishForUpdation.Ingredients = dishUpdateModel.Ingredients;
+            if (dishUpdateModel.ReadyIn.TotalSeconds > 0)
+                dishForUpdation.ReadyIn = dishUpdateModel.ReadyIn;
+            if (dishUpdateModel.CategoryId > 0)
+                dishForUpdation.CategoryId = dishUpdateModel.CategoryId;
 
             FileHelper.WriteToFile(PathHolder.DishPath, convertedDishes);
         }
@@ -86,10 +90,23 @@ namespace ExamProject.Services.DishServices
             string text = FileHelper.ReadFromFile(PathHolder.DishPath);
             List<Dish> convertedDishes = text.ToDish();
 
-            var dishForDeletion = convertedDishes.Find(x => x.Id == id && x.ChatId == chatId)
-                ?? throw new Exception($"Dish could not be found with ID: {id}");
+            var dishForDeletion = convertedDishes.Find(x => x.Id == id && x.ChatId == chatId);
+            if (dishForDeletion == null) 
+            { 
+                throw new Exception($"Dish could not be found with ID: {id}"); 
+            }
 
             convertedDishes.Remove(dishForDeletion);
+
+            FileHelper.WriteToFile(PathHolder.DishPath, convertedDishes);
+        }
+
+        public void DeleteAllByCategoryId(long chatId, int categoryId)
+        {
+            string text = FileHelper.ReadFromFile(PathHolder.DishPath);
+            List<Dish> convertedDishes = text.ToDish();
+
+            convertedDishes.RemoveAll(x => x.ChatId == chatId && x.CategoryId == categoryId);
 
             FileHelper.WriteToFile(PathHolder.DishPath, convertedDishes);
         }
@@ -100,12 +117,26 @@ namespace ExamProject.Services.DishServices
             List<Dish> convertedDishes = text.ToDish();
 
             var dish = convertedDishes.Find(x => x.Id == id && x.ChatId == chatId || x.ChatId == 0)
-                ?? throw new Exception($"Dish could not be found with ID: {id}");
+                ?? throw new Exception($"Dish not found.");
 
             string Categorytext = FileHelper.ReadFromFile(PathHolder.CategoryPath);
             List<Category> categories = Categorytext.ToCategories();
 
-            return dish.ToDishViewModel(categories,chatId);
+            return dish.ToDishViewModel(categories, chatId);
+        }
+
+        public Dish GetForUpdation(long chatId, int id)
+        {
+            string text = FileHelper.ReadFromFile(PathHolder.DishPath);
+            List<Dish> convertedDishes = text.ToDish();
+
+            var dish = convertedDishes.Find(x => x.Id == id && x.ChatId == chatId)
+                ?? throw new Exception($"Dish not found.");
+
+            string Categorytext = FileHelper.ReadFromFile(PathHolder.CategoryPath);
+            List<Category> categories = Categorytext.ToCategories();
+
+            return dish;
         }
 
         public List<DishViewModel> GetAllByDishName(long chatId, string dishName)
@@ -130,7 +161,7 @@ namespace ExamProject.Services.DishServices
             {
                 if (dish.Name.Contains(dishName, StringComparison.OrdinalIgnoreCase))
                 {
-                    matchedDishes.Add(dish.ToDishViewModel(categories,chatId));
+                    matchedDishes.Add(dish.ToDishViewModel(categories, chatId));
                 }
             }
 
@@ -163,7 +194,7 @@ namespace ExamProject.Services.DishServices
             {
                 if (dish.CategoryId == categoryId)
                 {
-                    matchedDishes.Add(dish.ToDishViewModel(categories,chatId));
+                    matchedDishes.Add(dish.ToDishViewModel(categories, chatId));
                 }
             }
 

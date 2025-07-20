@@ -28,7 +28,7 @@ public static class ListExtention
 
                     foreach (var ingredient in ingredients)
                     {
-                        string perIngredient = $"{ingredient.Name},{ingredient.Amount},{ingredient.Unit}";
+                        string perIngredient = $"{ingredient.Name} {ingredient.Amount} {ingredient.Unit}";
                         ingredientStrings.Add(perIngredient);
                     }
 
@@ -39,8 +39,6 @@ public static class ListExtention
                     stringValue = value != null ? value.ToString() : "null";
                 }
 
-                if (stringValue.Contains(",") || stringValue.Contains("\""))
-                    stringValue = $"\"{stringValue.Replace("\"", "\"\"")}\"";
 
                 values.Add(stringValue);
             }
