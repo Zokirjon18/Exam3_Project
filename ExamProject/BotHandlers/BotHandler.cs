@@ -26,7 +26,7 @@ internal class BotHandler
 
     public BotHandler()
     {
-        botClient = new("7569582496:AAEONimHysHEis2dPBFgUSxhCzEJ4qeaOrg");
+        botClient = new("Your_Telegram_Bot_Token");
         this.categoryService = new CategoryService();
         this.dishService = new DishService(categoryService);
     }
