@@ -1,4 +1,6 @@
-﻿using ExamProject.BotHandlers;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
+using ExamProject.BotHandlers;
 using Telegram.Bot;
 
 namespace ExamProject
@@ -10,5 +12,6 @@ namespace ExamProject
             BotHandler botHandler = new BotHandler();
             await botHandler.Run();
         }
+
     }
 }

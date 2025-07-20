@@ -333,14 +333,14 @@ internal class BotHandler
 
             if (text.ToLower() == "/start")
             {
-                //DishSession.HoldCallerChatId.Remove(chatId);
-                //CategorySession.HoldCallerChatId.Remove(chatId);
-                //SearchByDishNameSession.HoldCallerChatId.Remove(chatId);
-                //SearchByIngSession.HoldCallerChatId.Remove(chatId);
-                //UpdateCategorySession.Session.Remove(chatId);
-                //UpdateDishSession.Session.Remove(chatId);
-                //UpdateDishSession.dishUpdateStep.Remove(chatId);
-                //UpdateDishSession.tempIngredients.Remove(chatId);
+                DishSession.HoldCallerChatId.Remove(chatId);
+                CategorySession.HoldCallerChatId.Remove(chatId);
+                SearchByDishNameSession.HoldCallerChatId.Remove(chatId);
+                SearchByIngSession.HoldCallerChatId.Remove(chatId);
+                UpdateCategorySession.Session.Remove(chatId);
+                UpdateDishSession.Session.Remove(chatId);
+                UpdateDishSession.dishUpdateStep.Remove(chatId);
+                UpdateDishSession.tempIngredients.Remove(chatId);
 
                 var keyboard = new ReplyKeyboardMarkup(new[]
                 {
