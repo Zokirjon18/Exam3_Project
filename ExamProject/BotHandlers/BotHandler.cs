@@ -1,10 +1,5 @@
-﻿using System.Linq;
-using System.Threading;
-using ExamProject.botSessions;
-using ExamProject.Constants;
-using ExamProject.Domain;
+﻿using ExamProject.botSessions;
 using ExamProject.Enums;
-using ExamProject.Extentions;
 using ExamProject.Models;
 using ExamProject.Services.CategoryServices;
 using ExamProject.Services.DishServices;
@@ -13,7 +8,6 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ExamProject.BotHandlers;
 
@@ -112,7 +106,7 @@ internal class BotHandler
                 // dish selection and deletion part
                 else if (data.StartsWith("dish="))
                 {
-                    int dishId = int.Parse(data.Split('=')[2]);
+                    int dishId = int.Parse(data.Split('=')[1]);
 
                     var dish = dishService.Get(fromChatId, dishId);
 
@@ -121,7 +115,7 @@ internal class BotHandler
                     {
                         new[]
                         {
-                            InlineKeyboardButton.WithCallbackData("✅ Yes", $"confirm-delete-dish-{dishId}"),
+                            InlineKeyboardButton.WithCallbackData("✅ Yes", $"confirm-delete-dish:{dishId}"),
                             InlineKeyboardButton.WithCallbackData("❌ No", "cancel-delete-dish")
                         }
                     });
@@ -134,9 +128,9 @@ internal class BotHandler
                         cancellationToken: token);
                     return;
                 }
-                else if (data.StartsWith("confirm-delete-dish-"))
+                else if (data.StartsWith("confirm-delete-dish:"))
                 {
-                    int dishId = int.Parse(data.Split('-')[3]);
+                    int dishId = int.Parse(data.Split(':')[1]);
 
                     dishService.Delete(fromChatId, dishId);
 
@@ -151,9 +145,9 @@ internal class BotHandler
                 }
 
                 // category deletion part
-                else if (data.StartsWith("delete-cat-"))
+                else if (data.StartsWith("delete-cat:"))
                 {
-                    int categoryId = int.Parse(data.Split('-')[2]);
+                    int categoryId = int.Parse(data.Split(':')[1]);
 
                     var category = categoryService.Get(fromChatId, categoryId);
 
@@ -180,7 +174,6 @@ internal class BotHandler
                     if (int.TryParse(data.Split(':')[1], out int categoryId))
                     {
                         categoryService.Delete(fromChatId, categoryId);
-                        categoryService.Delete(fromChatId, categoryId);
                         dishService.DeleteAllByCategoryId(fromChatId, categoryId);
 
                         await client.SendMessage(fromChatId, "✅ Category deleted successfully.", cancellationToken: token);
@@ -194,9 +187,9 @@ internal class BotHandler
                 }
 
                 // update category part
-                else if (data.StartsWith("update-cat-"))
+                else if (data.StartsWith("update-cat:"))
                 {
-                    int categoryId = int.Parse(data.Split('-')[2]);
+                    int categoryId = int.Parse(data.Split(':')[1]);
 
                     // Store the session to track which category to update
                     UpdateCategorySession.Session[fromChatId] = $"update-category-{categoryId}";
@@ -209,13 +202,13 @@ internal class BotHandler
                     return;
                 }
 
-
-                else if (data.StartsWith("update-dish-"))
+                // Update dish part
+                else if (data.StartsWith("update-dish:"))
                 {
-                    int dishId = int.Parse(data.Split('-')[2]);
+                    int dishId = int.Parse(data.Split(':')[1]);
                     var dish = dishService.GetForUpdation(fromChatId, dishId);
 
-                    UpdateDishSession.Session[fromChatId] = new DishUpdateModel
+                    UpdateDishSession.modelForUpdation[fromChatId] = new DishUpdateModel
                     {
                         Id = dishId,
                         ChatId = fromChatId,
@@ -223,7 +216,6 @@ internal class BotHandler
                         Ingredients = dish.Ingredients,
                         ReadyIn = dish.ReadyIn,
                         CategoryId = dish.CategoryId
-                        
                     };
 
                     UpdateDishSession.dishUpdateStep[fromChatId] = "name";
@@ -233,19 +225,19 @@ internal class BotHandler
                         cancellationToken: token);
                     return;
                 }
-                else if (data.StartsWith("upd-dishCategory-"))
+                else if (data.StartsWith("upd-dishCategory:"))
                 {
-                    if (data.EndsWith("skip"))
+                    if (data.EndsWith("/skip"))
                     {
                         // User chose to skip category update
-                        var dishsh = UpdateDishSession.Session[fromChatId];
+                        var dishsh = UpdateDishSession.modelForUpdation[fromChatId];
                         await FinalizeDishUpdate(client, fromChatId, dishsh);
                         return;
                     }
 
-                    int categoryId = int.Parse(data.Split('-')[2]);
+                    int categoryId = int.Parse(data.Split(':')[1]);
 
-                    if (UpdateDishSession.Session.TryGetValue(fromChatId, out var dish))
+                    if (UpdateDishSession.modelForUpdation.TryGetValue(fromChatId, out var dish))
                     {
                         dish.CategoryId = categoryId;
                         await FinalizeDishUpdate(client, fromChatId, dish);
@@ -338,7 +330,7 @@ internal class BotHandler
                 SearchByDishNameSession.HoldCallerChatId.Remove(chatId);
                 SearchByIngSession.HoldCallerChatId.Remove(chatId);
                 UpdateCategorySession.Session.Remove(chatId);
-                UpdateDishSession.Session.Remove(chatId);
+                UpdateDishSession.modelForUpdation.Remove(chatId);
                 UpdateDishSession.dishUpdateStep.Remove(chatId);
                 UpdateDishSession.tempIngredients.Remove(chatId);
 
@@ -613,7 +605,7 @@ internal class BotHandler
                 }
 
                 var buttons = categories
-                    .Select(c => InlineKeyboardButton.WithCallbackData(c.Name, $"delete-cat-{c.Id}"))
+                    .Select(c => InlineKeyboardButton.WithCallbackData(c.Name, $"delete-cat:{c.Id}"))
                     .Chunk(4)
                     .Select(row => row.ToList())
                     .ToList();
@@ -661,7 +653,7 @@ internal class BotHandler
                 }
 
                 var buttons = categories
-                    .Select(c => InlineKeyboardButton.WithCallbackData(c.Name, $"update-cat-{c.Id}"))
+                    .Select(c => InlineKeyboardButton.WithCallbackData(c.Name, $"update-cat:{c.Id}"))
                     .Chunk(4)
                     .Select(row => row.ToList())
                     .ToList();
@@ -689,6 +681,7 @@ internal class BotHandler
                 return;
             }
            
+
             else if (text == "🖊️ Edit Dish")
             {
                 // Start the edit dish process
@@ -709,7 +702,7 @@ internal class BotHandler
                     List<DishViewModel> filteredDishes;
                     try
                     {
-                        filteredDishes = dishService.GetAllByDishName(chatId, text.ToLower());
+                        filteredDishes = dishService.GetAllByDishName(chatId, text.Trim());
 
                         if (filteredDishes.Count == 0)
                         {
@@ -720,7 +713,7 @@ internal class BotHandler
 
   
                         var buttons = filteredDishes
-                                    .Select(d => InlineKeyboardButton.WithCallbackData(d.Name, $"update-dish-{d.Id}"))
+                                    .Select(d => InlineKeyboardButton.WithCallbackData(d.Name, $"update-dish:{d.Id}"))
                                     .Chunk(4)
                                     .Select(row => row.ToList())
                                     .ToList();
@@ -737,7 +730,7 @@ internal class BotHandler
                     return;
                 }
 
-                if (UpdateDishSession.Session.TryGetValue(chatId, out var dish))
+                else if (UpdateDishSession.modelForUpdation.TryGetValue(chatId, out var dish))
                 {
                     if (currentStep == "name")
                     {
@@ -798,6 +791,7 @@ internal class BotHandler
                                 return;
                             }
                         }
+                        return;
                     }
 
                     else if (currentStep == "time")
@@ -819,7 +813,7 @@ internal class BotHandler
 
                         var categories = categoryService.GetAll(chatId);
                         var categoryButtons = categories
-                            .Select(c => InlineKeyboardButton.WithCallbackData(c.Name, $"upd-dishCategory-{c.Id}"))
+                            .Select(c => InlineKeyboardButton.WithCallbackData(c.Name, $"upd-dishCategory:{c.Id}"))
                             .Chunk(3)
                             .Select(c => c.ToList())
                             .ToList();
@@ -859,7 +853,7 @@ internal class BotHandler
             dishService.Update(dish);
 
             // More comprehensive cleanup
-            UpdateDishSession.Session.Remove(chatId);
+            UpdateDishSession.modelForUpdation.Remove(chatId);
             UpdateDishSession.dishUpdateStep.Remove(chatId);
             if (UpdateDishSession.tempIngredients.ContainsKey(chatId))
                 UpdateDishSession.tempIngredients.Remove(chatId);
@@ -871,7 +865,7 @@ internal class BotHandler
             await client.SendMessage(chatId, $"❌ Error updating dish: {ex.Message}");
 
             // Cleanup even if update fails
-            UpdateDishSession.Session.Remove(chatId);
+            UpdateDishSession.modelForUpdation.Remove(chatId);
             UpdateDishSession.dishUpdateStep.Remove(chatId);
             if (UpdateDishSession.tempIngredients.ContainsKey(chatId))
                 UpdateDishSession.tempIngredients.Remove(chatId);

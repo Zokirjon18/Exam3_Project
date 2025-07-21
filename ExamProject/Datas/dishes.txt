@@ -1,7 +1,5 @@
 2,dsdsd,,12:00:00,4,1631057205
-6,toy Osh,Gosht 4 kg|non 2 pieces,03:30:00,5,1631057205
-7,choyxona Osh,Gosht 4 kg|non 3 pieces,03:30:00,5,1631057205
+7,choyxona Osh,guruch 5 kg|gosht 5 kg|suv 100 ml|no'xat 100 gram|qizilsabzi 2 kg|sariqSabzi 2 kg,04:30:00,5,1631057205
 8,achchiq Osh,Gosht 4 kg,03:30:00,5,1631057205
 9,Mo'shxorda,Mosh 200 gram|Guruch 200 gram|Suv 500 ml,02:00:00,5,1631057205
 1,Alivye,Kartoshka 1 kg|Sabzi 500 gram|Garox 3 gram|Mayanez 200 gram,01:00:00,3,5017670770
-11,manti,flour 300 gram,02:30:00,7,1631057205

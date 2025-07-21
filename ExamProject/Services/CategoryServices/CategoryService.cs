@@ -66,10 +66,10 @@ namespace ExamProject.Services.CategoryServices
 
             var categoryToDelete = categories.Find(x => x.ChatId == chatId && x.Id == id);
 
-            //if (categoryToDelete == null)
-            //{
-            //    throw new Exception($"Category with ID {id} was not found for this user.");
-            //}
+            if (categoryToDelete == null)
+            {
+                throw new Exception($"Category with ID {id} was not found for this user.");
+            }
 
             categories.Remove(categoryToDelete);
 
